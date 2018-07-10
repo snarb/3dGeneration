@@ -26,14 +26,14 @@ def BuildCoords():
 		if(i > 0 and i % RANDOM_STEP_CHECK == 0):
 			currentVelocity = np.random.uniform(-CAMERA_Z_MAX_VELOCITY, CAMERA_Z_MAX_VELOCITY)
 
-		curAngel = angelStep * i # theta
-		x = CAMERA_PATH_RADIUS * cos(curAngel)
-		y = CAMERA_PATH_RADIUS * sin(curAngel)
-		curZ += currentVelocity
-		if(curZ < 0):
-			curZ = 0
+			curAngel = angelStep * i # theta
+			x = CAMERA_PATH_RADIUS * cos(curAngel)
+			y = CAMERA_PATH_RADIUS * sin(curAngel)
+			curZ += currentVelocity
+			if(curZ < 0):
+				curZ = 0
 
-		points.append([x, y, curZ])
+			points.append([x, y, curZ])
 
 	return points
 
@@ -96,13 +96,13 @@ def AddConstrains():
 	#camera.constraints.remove(ttc)
 
 def DeleteCameraPath():
-    bpy.ops.object.select_all(action='DESELECT')
-    bpy.data.objects['cameraPath'].select = True
-    bpy.ops.object.delete() 
+	bpy.ops.object.select_all(action='DESELECT')
+	bpy.data.objects['cameraPath'].select = True
+	bpy.ops.object.delete() 
 
 def get_random_color():
-    r, g, b = [random.random() for i in range(3)]
-    return (r, g, b)
+	r, g, b = [random.random() for i in range(3)]
+	return (r, g, b)
 
 def SetUp():
 	bpy.ops.object.select_all(action='DESELECT')
@@ -146,10 +146,26 @@ bpy.ops.object.select_all(action='DESELECT')
 # bpy.context.scene.render.resolution_y = RESOLUTION_Y
 
 # for curFrame in range(FRAMES_TO_RENDER):
-#     fileName = '/shot_%d.jpg' % curFrame
-#     bpy.data.scenes["Scene"].render.filepath = PATH_TO_SAVE + fileName
-#     bpy.ops.render.render(animation=True)
+# fileName = '/shot_%d.jpg' % curFrame
+# bpy.data.scenes["Scene"].render.filepath = PATH_TO_SAVE + fileName
+# bpy.ops.render.render(animation=True)
 
-bpy.data.scenes["Scene"].render.filepath = PATH_TO_SAVE 
-bpy.data.scenes["Scene"].frame_end = 50
-bpy.ops.render.render(animation=True)
+s = bpy.context.scene # If your scene is named "Scene", you could also use bpy.data.scenes["Scene"]
+cam = s.camera
+
+for fr in range(s.frame_start, 30):
+	print(fr)
+	fileName = '/shot_%d.jpg' % fr
+	s.render.filepath = PATH_TO_SAVE + fileName
+	s.frame_set(fr)
+	#s.frame_current = fr
+	s.update() # Not entirely sure this is fully necessary 
+	print(cam.matrix_world.to_translation())
+	print(cam.matrix_world.to_euler())
+	bpy.ops.render.render(write_still=True)
+
+
+# bpy.data.scenes["Scene"].render.filepath = PATH_TO_SAVE 
+# bpy.data.scenes["Scene"].frame_end = 50
+# bpy.ops.render.render(animation=True)
+
